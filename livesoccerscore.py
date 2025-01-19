@@ -54,7 +54,7 @@ def display_matches(matches):
         if match_data:
             df = pd.DataFrame(
                 match_data,
-                columns=["Équipe Maison", "Équipe Extérieure", "Score Maison", "Score Extérieur", "Date", "Statut"]
+                columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date", "Finished/In Play"]
             )
              # Diviser la colonne Date en deux colonnes : Date et Heure
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
