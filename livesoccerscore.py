@@ -68,6 +68,10 @@ def display_matches(matches):
 
             styled_df = df.style.apply(highlight_in_play, axis=1)
             st.write(styled_df.to_html(), unsafe_allow_html=True)
+
+             # Supprimer l'affichage des numéros de ligne
+            st.dataframe(df.style.hide_index())
+
         else:
             st.info("No game today")
     else:
