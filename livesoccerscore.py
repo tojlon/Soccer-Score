@@ -60,11 +60,11 @@ def display_matches(matches):
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
             df['Heure'] = df['Heure'].str.replace('Z', '')
 
-                    # Appliquer un style pour changer la couleur de fond des lignes "in_play"
+             # Appliquer un style pour changer la couleur de fond des lignes "IN_PLAY"
             def highlight_in_play(row):
-            if row['Finished/In Play'] == 'IN_PLAY':
-                return ['background-color: lightgreen'] * len(row)
-            return [''] * len(row)
+                if row['Finished/In Play'] == 'IN_PLAY':
+                    return ['background-color: lightgreen'] * len(row)
+                return [''] * len(row)
 
             styled_df = df.style.apply(highlight_in_play, axis=1)
             st.write(styled_df.to_html(), unsafe_allow_html=True)
