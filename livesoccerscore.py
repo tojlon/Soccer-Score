@@ -56,6 +56,9 @@ def display_matches(matches):
                 match_data,
                 columns=["Équipe Maison", "Équipe Extérieure", "Score Maison", "Score Extérieur", "Date", "Statut"]
             )
+             # Diviser la colonne Date en deux colonnes : Date et Heure
+            df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
+            df['Heure'] = df['Heure'].str.replace('Z', '')
             st.dataframe(df)
         else:
             st.info("Aucun match à afficher.")
