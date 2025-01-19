@@ -30,7 +30,7 @@ def get_matches(competition_id):
 # Fonction pour afficher les matchs sous forme de tableau
 def display_matches(matches):
     if matches and "matches" in matches:
-        if st.sidebar.checkbox('debug'):
+        if st.sidebar.checkbox('Click to activate debug mode'):
             st.write("Structure des données de l'API :")
             st.write(matches)  # Affiche l'objet complet renvoyé par l'API
         
@@ -61,16 +61,16 @@ def display_matches(matches):
             df['Heure'] = df['Heure'].str.replace('Z', '')
             st.dataframe(df)
         else:
-            st.info("Aucun match à afficher.")
+            st.info("No game today")
     else:
-        st.info("Aucun match à afficher ou problème avec les données reçues.")
+        st.info("No game today or error in fetching data")
 
 # Titre de l'application
-st.title("Suivi des Résultats des Matchs de Football")
+st.title("Games of the Day")
 
 # Menu de navigation entre les ligues
 page = st.sidebar.radio(
-    "Choisir la compétition",
+    "Choose your league",
     ["Ligue 1", "Premier League", "Bundesliga"]
 )
 
@@ -82,7 +82,7 @@ competitions = {
 }
 
 # Obtenez les matchs pour la ligue choisie
-st.header(f"Matchs de la {page}")
+st.header(f"{page}")
 competition_id = competitions[page]
 matches = get_matches(competition_id)
 if matches:
