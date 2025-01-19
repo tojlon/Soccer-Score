@@ -59,7 +59,15 @@ def display_matches(matches):
              # Diviser la colonne Date en deux colonnes : Date et Heure
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
             df['Heure'] = df['Heure'].str.replace('Z', '')
-            st.table(df)
+            
+                    # Appliquer un style pour changer la couleur de fond des lignes "in_play"
+            def highlight_in_play(row):
+            if row['Statut'] == 'IN_PLAY':
+                return ['background-color: lightgreen'] * len(row)
+            return [''] * len(row)
+
+            styled_df = df.style.apply(highlight_in_play, axis=1)
+            st.write(styled_df.to_html(), unsafe_allow_html=True)
         else:
             st.info("No game today")
     else:
