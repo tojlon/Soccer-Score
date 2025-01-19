@@ -59,7 +59,7 @@ def display_matches(matches):
              # Diviser la colonne Date en deux colonnes : Date et Heure
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
             df['Heure'] = df['Heure'].str.replace('Z', '')
-            st.dataframe(df)
+            st.table(df)
         else:
             st.info("No game today")
     else:
