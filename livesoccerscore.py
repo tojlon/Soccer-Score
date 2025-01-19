@@ -59,10 +59,10 @@ def display_matches(matches):
              # Diviser la colonne Date en deux colonnes : Date et Heure
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
             df['Heure'] = df['Heure'].str.replace('Z', '')
-            
+
                     # Appliquer un style pour changer la couleur de fond des lignes "in_play"
             def highlight_in_play(row):
-            if row['Statut'] == 'IN_PLAY':
+            if row['Finished/In Play'] == 'IN_PLAY':
                 return ['background-color: lightgreen'] * len(row)
             return [''] * len(row)
 
