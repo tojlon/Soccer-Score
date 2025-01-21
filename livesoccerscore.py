@@ -56,9 +56,27 @@ def display_matches(matches):
                 match_data,
                 columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date", "Finished/In Play"]
             )
-             # Diviser la colonne Date en deux colonnes : Date et Heure
+            
+            from datetime import datetime
+            import pytz
+
+            # Diviser la colonne Date en deux colonnes : Date et Heure
             df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
             df['Heure'] = df['Heure'].str.replace('Z', '')
+
+            # Conversion de l'heure en fuseau horaire de Paris
+            utc = pytz.timezone('UTC')  # Fuseau horaire UTC
+            paris = pytz.timezone('Europe/Paris')  # Fuseau horaire Paris
+
+            # Fonction pour convertir l'heure en heure de Paris
+            def convert_to_paris_time(date, time):
+                utc_datetime = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+                utc_datetime = utc.localize(utc_datetime)  # Ajoute l'information UTC
+                paris_datetime = utc_datetime.astimezone(paris)  # Convertit en heure de Paris
+                return paris_datetime.strftime("%H:%M:%S")
+
+            # Appliquer la conversion sur la colonne 'Heure'
+            df['Paris Hour'] = df.apply(lambda row: convert_to_paris_time(row['Date'], row['Heure']), axis=1)
 
              # Appliquer un style pour changer la couleur de fond des lignes "IN_PLAY"
             def highlight_in_play(row):
@@ -79,15 +97,16 @@ st.title("Games of the Day")
 
 # Menu de navigation entre les ligues
 page = st.sidebar.radio(
-    "Choose your league",
-    ["Ligue 1", "Premier League", "Bundesliga"]
+    "Select League",
+    ["Ligue 1", "Premier League", "Bundesliga", "La Liga", "Champions League", "Europa League"]
 )
-
-# Mapping des ligues avec leurs identifiants de compétition
 competitions = {
     "Ligue 1": 2015,          # ID de la Ligue 1
     "Premier League": 2021,   # ID de la Premier League
-    "Bundesliga": 2002        # ID de la Bundesliga
+    "Bundesliga": 2002,       # ID de la Bundesliga
+    "La Liga": 2014,          # ID de La Liga
+    "Champions League": 2001,  # ID de la Champions League
+    "Europa League": 2148     # ID de l'Europa League)
 }
 
 # Obtenez les matchs pour la ligue choisie
