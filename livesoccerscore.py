@@ -87,7 +87,7 @@ def display_matches(matches):
             df = df[['Time (Paris)', 'Home Team', 'Away Team', 'Home Score', 'Away Score', 'Status', 'Referee', 'Ref Nationality']]
 
             # Afficher le tableau avec uniquement les informations pertinentes
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, hide_index=True)
         else:
             st.info("No game today")
     else:
