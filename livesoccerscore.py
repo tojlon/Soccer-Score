@@ -4,7 +4,7 @@ import pandas as pd
 
 # Définir votre clé d'accès API
 try:
-    API_KEY = st.secrets['API_KEY']
+    API_KEY = "5ff8d97bc26743f48288a4b88bf86e9c"
 except KeyError:
     st.error("API key is missing. Please check your secrets configuration.")
     st.stop()  # Arrêtez l'application pour qu'elle ne continue pas sans une clé API valide
@@ -120,3 +120,13 @@ competition_id = competitions[page]
 matches = get_matches(competition_id)
 if matches:
     display_matches(matches)
+
+# Test the API call
+import requests
+response = requests.get(BASE_URL, headers={"X-Auth-Token": API_KEY})
+
+if response.status_code == 200:
+    st.write("API call successful! Response:")
+    st.write(response.json())
+else:
+    st.error(f"API call failed with status code: {response.status_code}")
