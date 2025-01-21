@@ -27,6 +27,9 @@ def get_matches(competition_id):
         st.error(f"Erreur lors de la récupération des données: {response.status_code}")
         return None
 
+from datetime import datetime
+import pytz
+
 # Fonction pour afficher les matchs sous forme de tableau
 def display_matches(matches):
     if matches and "matches" in matches:
@@ -39,14 +42,10 @@ def display_matches(matches):
             try:
                 home_team = match["homeTeam"]["name"]
                 away_team = match["awayTeam"]["name"]
-                
-                # Utiliser 'home' et 'away' à l'intérieur de 'fullTime'
                 score_home = match["score"]["fullTime"]["home"]
                 score_away = match["score"]["fullTime"]["away"]
-                
                 date = match["utcDate"]
                 status = match["status"]
-                
                 match_data.append([home_team, away_team, score_home, score_away, date, status])
             except KeyError as e:
                 st.error(f"Clé manquante : {e} dans le match {match}")
@@ -54,39 +53,28 @@ def display_matches(matches):
         if match_data:
             df = pd.DataFrame(
                 match_data,
-                columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date", "Finished/In Play"]
+                columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date (UTC)", "Status"]
             )
             
-            from datetime import datetime
-            import pytz
-
-            # Diviser la colonne Date en deux colonnes : Date et Heure
-            df[['Date', 'Heure']] = df['Date'].str.split('T', expand=True)
-            df['Heure'] = df['Heure'].str.replace('Z', '')
-
-            # Conversion de l'heure en fuseau horaire de Paris
-            utc = pytz.timezone('UTC')  # Fuseau horaire UTC
+            # Convertir UTC en heure de Paris
             paris = pytz.timezone('Europe/Paris')  # Fuseau horaire Paris
+            df['Date (UTC)'] = pd.to_datetime(df['Date (UTC)'])
+            
+            # Vérifiez si la date et l'heure sont sensibles au fuseau horaire
+            if df['Date (UTC)'].dt.tz is None:
+                df['Date (UTC)'] = df['Date (UTC)'].dt.tz_localize('UTC')  # Localize if not already aware
+            
+            # Convertir le fuseau horaire en heure de Paris
+            df['Date (Paris)'] = df['Date (UTC)'].dt.tz_convert(paris)
+            
+            # Extraire l'heure en heure de Paris
+            df['Time (Paris)'] = df['Date (Paris)'].dt.strftime('%H:%M:%S')
 
-            # Fonction pour convertir l'heure en heure de Paris
-            def convert_to_paris_time(date, time):
-                utc_datetime = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
-                utc_datetime = utc.localize(utc_datetime)  # Ajoute l'information UTC
-                paris_datetime = utc_datetime.astimezone(paris)  # Convertit en heure de Paris
-                return paris_datetime.strftime("%H:%M:%S")
+            # Supprimer les colonnes inutiles (Date et Date (Paris))
+            df.drop(columns=['Date (UTC)', 'Date (Paris)'], inplace=True)
 
-            # Appliquer la conversion sur la colonne 'Heure'
-            df['Paris Hour'] = df.apply(lambda row: convert_to_paris_time(row['Date'], row['Heure']), axis=1)
-
-             # Appliquer un style pour changer la couleur de fond des lignes "IN_PLAY"
-            def highlight_in_play(row):
-                if row['Finished/In Play'] == 'IN_PLAY':
-                    return ['background-color: lightgreen'] * len(row)
-                return [''] * len(row)
-
-            styled_df = df.style.apply(highlight_in_play, axis=1)
-            st.write(styled_df.to_html(), unsafe_allow_html=True)
-
+            # Afficher le tableau avec uniquement les informations pertinentes
+            st.dataframe(df, use_container_width=True)
         else:
             st.info("No game today")
     else:
