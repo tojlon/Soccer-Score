@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import pandas as pd
 
+# Configure page layout
+st.set_page_config(layout="wide")
+
 # Définir votre clé d'accès API
 try:
     API_KEY = st.secrets["API_KEY"]
@@ -51,20 +54,22 @@ def display_matches(matches):
                 score_away = match["score"]["fullTime"]["away"]
                 date = match["utcDate"]
                 status = match["status"]
-                match_data.append([home_team, away_team, score_home, score_away, date, status])
+                referees = match["referees"][0]["name"] if match["referees"] else "N/A"
+                referees_nationality = match["referees"][0]["nationality"] if match["referees"] else "N/A"
+                match_data.append([home_team, away_team, score_home, score_away, date, status, referees, referees_nationality])
             except KeyError as e:
                 st.error(f"Clé manquante : {e} dans le match {match}")
         
         if match_data:
             df = pd.DataFrame(
                 match_data,
-                columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date (UTC)", "Status"]
+                columns=["Home Team", "Away Team", "Home Score", "Away Score", "Date (UTC)", "Status", "Referee", "Ref Nationality"]
             )
             
             # Convertir UTC en heure de Paris
             paris = pytz.timezone('Europe/Paris')  # Fuseau horaire Paris
             df['Date (UTC)'] = pd.to_datetime(df['Date (UTC)'])
-            
+
             # Vérifiez si la date et l'heure sont sensibles au fuseau horaire
             if df['Date (UTC)'].dt.tz is None:
                 df['Date (UTC)'] = df['Date (UTC)'].dt.tz_localize('UTC')  # Localize if not already aware
@@ -77,6 +82,9 @@ def display_matches(matches):
 
             # Supprimer les colonnes inutiles (Date et Date (Paris))
             df.drop(columns=['Date (UTC)', 'Date (Paris)'], inplace=True)
+
+            # Rearrange columns to move 'Time (Paris)' to the first position
+            df = df[['Time (Paris)', 'Home Team', 'Away Team', 'Home Score', 'Away Score', 'Status', 'Referee', 'Ref Nationality']]
 
             # Afficher le tableau avec uniquement les informations pertinentes
             st.dataframe(df, use_container_width=True)
