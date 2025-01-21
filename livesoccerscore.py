@@ -83,22 +83,34 @@ def display_matches(matches):
 # Titre de l'application
 st.title("Games of the Day")
 
+# Local paths to league logos
+league_logos = {
+    "Ligue 1 McDonald's": "logos/Logo_Ligue1.png",
+    "Premier League": "logos/Logo_PL.png",
+    "Bundesliga": "logos/Logo_Bundesliga.png",
+    "LaLiga": "logos/Logo_LaLiga.png",
+    "Champions League": "logos/Logo_CL.png",
+    "Europa League": "logos/Logo_EL.png",
+}
+
 # Menu de navigation entre les ligues
 page = st.sidebar.radio(
     "Select League",
-    ["Ligue 1", "Premier League", "Bundesliga", "La Liga", "Champions League", "Europa League"]
+    ["Ligue 1 McDonald's", "Premier League", "Bundesliga", "LaLiga", "Champions League", "Europa League"]
 )
 competitions = {
-    "Ligue 1": 2015,          # ID de la Ligue 1
-    "Premier League": 2021,   # ID de la Premier League
-    "Bundesliga": 2002,       # ID de la Bundesliga
-    "La Liga": 2014,          # ID de La Liga
-    "Champions League": 2001,  # ID de la Champions League
-    "Europa League": 2148     # ID de l'Europa League)
+    "Ligue 1 McDonald's": 2015, # ID de la Ligue 1
+    "Premier League": 2021,     # ID de la Premier League
+    "Bundesliga": 2002,         # ID de la Bundesliga
+    "LaLiga": 2014,             # ID de La Liga
+    "Champions League": 2001,   # ID de la Champions League
+    "Europa League": 2148       # ID de l'Europa League
 }
 
+# Display the logo and name of the selected league at the top of the page
+st.image(league_logos[page], width=150)  # Adjust the width for better display
+
 # Obtenez les matchs pour la ligue choisie
-st.header(f"{page}")
 competition_id = competitions[page]
 matches = get_matches(competition_id)
 if matches:
