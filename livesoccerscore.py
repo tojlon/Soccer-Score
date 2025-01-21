@@ -7,7 +7,7 @@ try:
     API_KEY = st.secrets['API_KEY']
 except KeyError:
     st.error("API key is missing. Please check your secrets configuration.")
-    st.stop()  # Stop the app from proceeding without a valid API key
+    st.stop()  # Arrêtez l'application pour qu'elle ne continue pas sans une clé API valide
 BASE_URL = "https://api.football-data.org/v4/matches"
 
 

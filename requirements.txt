@@ -1,2 +1,5 @@
 streamlit
 ipykernel
+pandas
+requests
+pytz
