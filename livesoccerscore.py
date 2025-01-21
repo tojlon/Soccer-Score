@@ -3,8 +3,13 @@ import requests
 import pandas as pd
 
 # Définir votre clé d'accès API
-API_KEY = st.secrets['API_KEY']
+try:
+    API_KEY = st.secrets['API_KEY']
+except KeyError:
+    st.error("API key is missing. Please check your secrets configuration.")
+    st.stop()  # Stop the app from proceeding without a valid API key
 BASE_URL = "https://api.football-data.org/v4/matches"
+
 
 # Fonction pour obtenir les résultats des matchs d'une ligue spécifique
 def get_matches(competition_id):
